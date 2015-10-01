@@ -89,6 +89,7 @@ public class MainActivity extends Activity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
         actionBar.setBackgroundDrawable(colorDrawable);
+
     }
 
 
