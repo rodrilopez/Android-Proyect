@@ -1,7 +1,10 @@
 package com.groups.p2.saferider;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +15,15 @@ import java.util.Vector;
 
 public class Ayuda extends Activity {
 
+    public void restoreActionBar(){
+        ActionBar actionBar = getActionBar();
+        ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#FA9B373B"));
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle("Help");
+        actionBar.setBackgroundDrawable(colorDrawable);
+    }
+
     public void Volver(View view){
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
@@ -21,6 +33,7 @@ public class Ayuda extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ayuda);
+        restoreActionBar();
     }
 
     @Override

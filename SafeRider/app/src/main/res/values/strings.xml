@@ -2,8 +2,8 @@
     <string name="app_name">Safe Rider</string>
 
     <string name="title_section1">Safe Rider</string>
-    <string name="title_section2">Configuracion</string>
-    <string name="title_section3">Ayuda</string>
+    <string name="title_section2">Settings</string>
+    <string name="title_section3">Help</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -11,4 +11,5 @@
     <string name="title_activity_config">Config</string>
 
     <string name="title_activity_ayuda">Ayuda</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

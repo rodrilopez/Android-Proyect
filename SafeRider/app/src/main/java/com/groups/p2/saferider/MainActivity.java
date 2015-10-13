@@ -3,12 +3,17 @@ package com.groups.p2.saferider;
 import android.app.Activity;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -36,7 +41,8 @@ public class MainActivity extends Activity
     private CharSequence mTitle;
 
     public void Ayuda(View view){
-        Intent i = new Intent(this, Activity2.class);
+
+        Intent i = new Intent(this, MapsActivity.class);
         startActivity(i);
     }
 
@@ -55,6 +61,7 @@ public class MainActivity extends Activity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -70,7 +77,6 @@ public class MainActivity extends Activity
                 mTitle = getString(R.string.title_section1);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section1);
                 Intent i = new Intent(this, Config.class);
                 startActivity(i);
                 break;
@@ -84,7 +90,7 @@ public class MainActivity extends Activity
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
-        ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#009688"));
+        ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#FA9B373B"));
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
