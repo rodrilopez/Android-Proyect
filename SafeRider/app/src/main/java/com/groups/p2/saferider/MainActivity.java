@@ -6,9 +6,11 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -16,6 +18,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,17 +26,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 
-public class MainActivity extends Activity
+
+public class
+        MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private String[] titulo;
+    private DrawerLayout NavDrawerLayout;
+    private ListView NavList;
+    private ArrayList<item_objct> NavItms;
+    private TypedArray NavIcons;
+    NavigationAdapter NavAdapter;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -51,14 +65,35 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
-        // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        NavDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavList = (ListView) findViewById(R.id.navigation_drawer);
+        NavIcons = getResources().obtainTypedArray(R.array.nav_iconos);
+        titulo = getResources().getStringArray(R.array.nav_options);
+        NavItms= new ArrayList<item_objct>();
+        NavItms.add(new item_objct(titulo[0], NavIcons.getResourceId(0, -1)));
+        NavItms.add(new item_objct(titulo[1], NavIcons.getResourceId(1, -1)));
+        NavItms.add(new item_objct(titulo[2], NavIcons.getResourceId(2, -1)));
+        NavAdapter=new NavigationAdapter(this, NavItms);
+        NavList.setAdapter(NavAdapter);
+
+        MostrarFragment(0);
+
+        NavList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+                MostrarFragment(position);
+            }
+        });
+
     }
 
 
@@ -71,22 +106,36 @@ public class MainActivity extends Activity
                 .commit();
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
+
+    private void MostrarFragment(int position){
+        Fragment fragment= null;
+
+        switch (position){
+            case 0:
+                fragment=new Home();
+                break;
             case 1:
-                mTitle = getString(R.string.title_section1);
+                fragment=new Settings();
                 break;
             case 2:
-                Intent i = new Intent(this, Config.class);
-                startActivity(i);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section1);
-                Intent o = new Intent(this, Ayuda.class);
-                startActivity(o);
+                fragment=new Help();
                 break;
         }
+        if (fragment!=null){
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
+
+            NavList.setItemChecked(position, true);
+            NavList.setSelection(position);
+
+            setTitle(titulo[position]);
+
+            NavDrawerLayout.closeDrawer(NavList);
+        }else {
+            Log.e("Error ", "MostrarFregment" + position);
+        }
     }
+
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
@@ -159,9 +208,32 @@ public class MainActivity extends Activity
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
+            ((MainActivity) activity).MostrarFragment(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
+
+
+    /*public void Volver(View v){
+        SQLiteHelper admin = new SQLiteHelper(this, "administracion", null, 1);
+        SQLiteDatabase bd = admin.getWritableDatabase();
+        String name = et1.getText().toString();
+        String email = et2.getText().toString();
+        String pass = et3.getText().toString();
+        String phone = et4.getText().toString();
+        ContentValues registro = new ContentValues();
+        registro.put("name", name);
+        registro.put("mail", email);
+        registro.put("password", pass);
+        registro.put("phone", phone);
+        bd.insert("Config", null, registro);
+        bd.close();
+        et1.setText("");
+        et2.setText("");
+        et3.setText("");
+        et4.setText("");
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+    }*/
 
 }

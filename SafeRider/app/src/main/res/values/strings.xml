@@ -1,15 +1,22 @@
 <resources>
     <string name="app_name">Safe Rider</string>
 
-    <string name="title_section1">Safe Rider</string>
-    <string name="title_section2">Settings</string>
-    <string name="title_section3">Help</string>
+    <string name="title_activity_config">Settings</string>
+    <string name="title_activity_ayuda">Help</string>
+    <string name="title_activity_maps">Maps</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="title_activity_activity2">Activity2</string>
-    <string name="title_activity_config">Config</string>
 
-    <string name="title_activity_ayuda">Ayuda</string>
-    <string name="title_activity_maps">Map</string>
+    <string-array name="nav_options">
+        <item>..Safe Rider</item>
+        <item>..Settings</item>
+        <item>..Help</item>
+    </string-array>
+
+    <array name="nav_iconos">
+        <item></item>
+        <item>@drawable/engranaje</item>
+        <item>@drawable/preg</item>
+    </array>
 </resources>
