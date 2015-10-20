@@ -18,7 +18,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:clickable="true"
-            android:onClick="Volver" />
+            android:onClick="Save" />
 
         <Button
             android:layout_width="wrap_content"
@@ -78,5 +78,5 @@
             android:layout_height="48dp"
             android:id="@+id/editText8"
             android:layout_above="@+id/button4"
-            android:layout_alignParentStart="false" />
+            android:layout_alignParentStart="true" />
     </RelativeLayout>

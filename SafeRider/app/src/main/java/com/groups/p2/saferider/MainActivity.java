@@ -5,11 +5,14 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.widget.DrawerLayout;
@@ -22,6 +25,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -48,6 +53,7 @@ public class
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    SQLiteHelper database = new SQLiteHelper(this,"Config",null,1);
 
     public void Start(View view){
 
@@ -56,39 +62,74 @@ public class
     }
 
     public void Save(View view){
-        SQLiteHelper admin = new SQLiteHelper(this, "administracion", null, 1);
+        et1 = (EditText) findViewById(R.id.editText5);
+        et2 = (EditText) findViewById(R.id.editText6);
+        et3 = (EditText) findViewById(R.id.editText7);
+        et4 = (EditText) findViewById(R.id.editText8);
+        SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
         SQLiteDatabase bd = admin.getWritableDatabase();
         String name = et1.getText().toString();
         String email = et2.getText().toString();
         String pass = et3.getText().toString();
-        int phone = Contacts();
+        String phone1 = Contacts(uri);
         String sms = et4.getText().toString();
         ContentValues registro = new ContentValues();
         registro.put("name", name);
         registro.put("mail", email);
         registro.put("password", pass);
-        registro.put("phone", phone);
+        registro.put("phone", phone1);
         registro.put("sms", sms);
         bd.insert("Config", null, registro);
         bd.close();
-        et1.setText("");
-        et2.setText("");
-        et3.setText("");
-        et4.setText("");
+        Toast.makeText(getApplicationContext(), "Settings are saved", Toast.LENGTH_SHORT).show();
+        MostrarFragment(1);
+
     }
 
-    public int Contacts(){
+    public String Contacts(Uri uri){
         Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
         this.startActivityForResult(contactPickerIntent, ID);
-        int a;
-        return a=0;
+
+        String id = null;
+        String phone = null;
+
+        Cursor contactCursor= getContentResolver().query(
+                uri,
+                new String[]{ContactsContract.Contacts._ID},
+                null,
+                null,
+                null);
+
+        if (contactCursor.moveToFirst()){
+            id=contactCursor.getString(0);
+        }
+        contactCursor.close();
+
+        String selecArg =
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID+ " = ? AND " +
+                        ContactsContract.CommonDataKinds.Phone.TYPE+ " = "+
+                        ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
+
+        Cursor phoneCursor = getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
+                selecArg,
+                new String[]{id},
+                null);
+
+        if (phoneCursor.moveToFirst()){
+            phone=phoneCursor.getString(0);
+        }
+
+        phoneCursor.close();
+
+        return phone;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -109,19 +150,20 @@ public class
         NavAdapter=new NavigationAdapter(this, NavItms);
         NavList.setAdapter(NavAdapter);
 
-        MostrarFragment(0);
-
         NavList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-                MostrarFragment(position);
+                MostrarFragment(position + 1);
             }
         });
+        try {
+            MostrarFragment(1);
+        }catch (Exception e){
 
-        et1 = (EditText) findViewById(R.id.editText5);
-        et2 = (EditText) findViewById(R.id.editText6);
-        et3 = (EditText) findViewById(R.id.editText7);
-        et4 = (EditText) findViewById(R.id.editText8);
+        }
+
+
+
     }
 
 
@@ -137,16 +179,27 @@ public class
 
     private void MostrarFragment(int position){
         Fragment fragment= null;
-
+        System.out.println(position);
         switch (position){
-            case 0:
+            case 1:
                 fragment=new Home();
                 break;
-            case 1:
-                fragment=new Settings();
-                break;
             case 2:
+                SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
+                SQLiteDatabase bd = admin.getReadableDatabase();
+                Cursor fila = bd.rawQuery("select * from Config", null);
+                if (fila.moveToFirst()){
+                    fragment=new Settings2();
+                }else {
+                    fragment = new Settings();
+                }
+                break;
+            case 3:
                 fragment=new Help();
+                break;
+            default:
+                fragment = new Home();
+                position=1;
                 break;
         }
         if (fragment!=null){
@@ -156,7 +209,7 @@ public class
             NavList.setItemChecked(position, true);
             NavList.setSelection(position);
 
-            setTitle(titulo[position]);
+            setTitle(titulo[position-1]);
 
             NavDrawerLayout.closeDrawer(NavList);
         }else {
