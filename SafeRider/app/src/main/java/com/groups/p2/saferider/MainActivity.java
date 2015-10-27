@@ -45,6 +45,9 @@ public class
     private ArrayList<item_objct> NavItms;
     private TypedArray NavIcons;
     NavigationAdapter NavAdapter;
+    public static final int PICK_CONTACT_REQUEST = 1;
+    private Uri contactUri;
+
 
     private EditText et1,et2,et3,et4;
     public static final int ID = 0;
@@ -55,6 +58,152 @@ public class
     private CharSequence mTitle;
     SQLiteHelper database = new SQLiteHelper(this,"Config",null,1);
 
+
+
+    public void saveEmail(View view){
+
+        SQLiteHelper admin = new SQLiteHelper(getApplicationContext(), "Config", null, 1);
+        SQLiteDatabase bd = admin.getReadableDatabase();
+        Cursor f = bd.rawQuery("select * from Config where id =" + 1, null);
+        f.moveToFirst();
+        TextView tv1 = (TextView) findViewById(R.id.textView6);
+        tv1.setText(f.getString(2));
+        String item1 = f.getString(1);
+        String item3 = f.getString(3);
+        String item4 = f.getString(4);
+        String item5 = f.getString(5);
+
+
+        SQLiteHelper admin2 = new SQLiteHelper(getApplicationContext(), "Config", null, 1);
+
+        SQLiteDatabase bd2 = admin.getWritableDatabase();
+        bd2.delete("Config", "id=" + 1, null);
+
+
+        SQLiteHelper admin3 = new SQLiteHelper(getApplicationContext(), "Config", null, 1);
+
+        SQLiteDatabase bd3 = admin.getWritableDatabase();
+        EditText et1 = (EditText) findViewById(R.id.editText4);
+
+        String item2 = et1.getText().toString();
+
+        ContentValues registro = new ContentValues();
+        registro.put("name", item1);
+        registro.put("mail", item2);
+        registro.put("password", item3);
+        registro.put("phone", item4);
+        registro.put("sms", item5);
+        bd3.insert("Config", null, registro);
+        bd3.close();
+        Toast.makeText(getApplicationContext(), "New E-mail are Saved", Toast.LENGTH_SHORT).show();
+
+    }
+
+
+
+
+    public void initPickContacts(View v){
+    /*
+    Crear un intent para seleccionar un contacto del dispositivo
+     */
+
+        Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+
+    /*
+    Iniciar la actividad esperando respuesta a través
+    del canal PICK_CONTACT_REQUEST
+     */
+
+        startActivityForResult(i, PICK_CONTACT_REQUEST);
+
+    }
+
+    private void renderContact(Uri uri) {
+
+    /*
+    Obtener instancias de los Views
+     */
+        TextView contactPhone = (TextView)findViewById(R.id.textView10);
+
+
+    /*
+    Setear valores
+     */
+        contactPhone.setText(getPhone(uri));
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == PICK_CONTACT_REQUEST) {
+            if (resultCode == RESULT_OK) {
+            /*
+            Capturar el valor de la Uri
+             */
+                contactUri = intent.getData();
+            /*
+            Procesar la Uri
+             */
+                renderContact(contactUri);
+            }
+        }
+    }
+
+
+
+    private String getPhone(Uri uri) {
+    /*
+    Variables temporales para el id y el teléfono
+     */
+        String id = null;
+        String phone = null;
+
+        /************* PRIMERA CONSULTA ************/
+    /*
+    Obtener el _ID del contacto
+     */
+        Context context = null;
+        Cursor contactCursor = getContentResolver().query(
+                uri,
+                new String[]{ContactsContract.Contacts._ID},
+                null,
+                null,
+                null);
+
+
+        if (contactCursor.moveToFirst()) {
+            id = contactCursor.getString(0);
+        }
+        contactCursor.close();
+
+        /************* SEGUNDA CONSULTA ************/
+    /*
+    Sentencia WHERE para especificar que solo deseamos
+    números de telefonía móvil
+     */
+        String selectionArgs =
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? AND " +
+                        ContactsContract.CommonDataKinds.Phone.TYPE+"= " +
+                        ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
+
+    /*
+    Obtener el número telefónico
+     */
+        Cursor phoneCursor = getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
+                selectionArgs,
+                new String[]{id},
+                null
+        );
+        if (phoneCursor.moveToFirst()) {
+            phone = phoneCursor.getString(0);
+        }
+        phoneCursor.close();
+
+        return phone;
+    }
+
+
+
     public void Start(View view){
 
         Intent i = new Intent(this, MapsActivity.class);
@@ -62,16 +211,18 @@ public class
     }
 
     public void Save(View view){
+
         et1 = (EditText) findViewById(R.id.editText5);
         et2 = (EditText) findViewById(R.id.editText6);
         et3 = (EditText) findViewById(R.id.editText7);
         et4 = (EditText) findViewById(R.id.editText8);
+        TextView et5 = (TextView) findViewById(R.id.textView10);
         SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
         SQLiteDatabase bd = admin.getWritableDatabase();
         String name = et1.getText().toString();
         String email = et2.getText().toString();
         String pass = et3.getText().toString();
-        String phone1 = Contacts(uri);
+        String phone1 = et5.getText().toString();
         String sms = et4.getText().toString();
         ContentValues registro = new ContentValues();
         registro.put("name", name);
@@ -86,45 +237,7 @@ public class
 
     }
 
-    public String Contacts(Uri uri){
-        Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        this.startActivityForResult(contactPickerIntent, ID);
 
-        String id = null;
-        String phone = null;
-
-        Cursor contactCursor= getContentResolver().query(
-                uri,
-                new String[]{ContactsContract.Contacts._ID},
-                null,
-                null,
-                null);
-
-        if (contactCursor.moveToFirst()){
-            id=contactCursor.getString(0);
-        }
-        contactCursor.close();
-
-        String selecArg =
-                ContactsContract.CommonDataKinds.Phone.CONTACT_ID+ " = ? AND " +
-                        ContactsContract.CommonDataKinds.Phone.TYPE+ " = "+
-                        ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
-
-        Cursor phoneCursor = getContentResolver().query(
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
-                selecArg,
-                new String[]{id},
-                null);
-
-        if (phoneCursor.moveToFirst()){
-            phone=phoneCursor.getString(0);
-        }
-
-        phoneCursor.close();
-
-        return phone;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,7 +302,7 @@ public class
                 SQLiteDatabase bd = admin.getReadableDatabase();
                 Cursor fila = bd.rawQuery("select * from Config", null);
                 if (fila.moveToFirst()){
-                    fragment=new Settings2();
+                    fragment = new Settings2();
                 }else {
                     fragment = new Settings();
                 }

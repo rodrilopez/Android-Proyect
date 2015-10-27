@@ -23,14 +23,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS USERS ( " +
-                "First_name TEXT, " +
-                "Last_name TEXT, "+
-                "Email KEY TEXT NOT NULL, "+
-                "Username TEXT NOT NULL, "+
-                "Password TEXT NOT NULL)");
-        this.onCreate(db);
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
     }
 
 

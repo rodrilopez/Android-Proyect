@@ -43,6 +43,7 @@ public class NavigationAdapter extends BaseAdapter {
         TextView titulo_itm;
         ImageView icono;
     }
+
     public View getView(int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
         Fila view;
