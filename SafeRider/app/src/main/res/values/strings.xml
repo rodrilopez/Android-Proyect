@@ -9,9 +9,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string-array name="nav_options">
-        <item>..Safe Rider</item>
-        <item>..Settings</item>
-        <item>..Help</item>
+        <item>Safe Rider</item>
+        <item>Settings</item>
+        <item>Help</item>
     </string-array>
 
     <array name="nav_iconos">

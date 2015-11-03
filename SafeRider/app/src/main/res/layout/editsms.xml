@@ -30,5 +30,7 @@
         android:id="@+id/button7"
         android:layout_alignParentBottom="true"
         android:layout_alignEnd="@+id/editText9"
-        android:layout_marginBottom="15dp" />
+        android:layout_marginBottom="15dp"
+        android:clickable="true"
+        android:onClick="saveSms" />
 </RelativeLayout>

@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/ivItem"
         android:gravity="center_horizontal"
+        android:paddingLeft="10dp"
         android:paddingRight="40dp"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
@@ -28,7 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvTitle"
         android:layout_toRightOf="@+id/ivItem"
-        android:paddingLeft="10dp"
+        android:paddingLeft="20dp"
+        android:paddingBottom="10dp"
         android:textSize="14dp" />
 
 </RelativeLayout>

@@ -49,16 +49,15 @@ public class Settings2 extends Fragment implements AdapterView.OnItemClickListen
         NavList2 = (ListView) view.findViewById(R.id.listView);
 
         String item1 = f.getString(2);
-
         String item3 = f.getString(4);
         String item4 = f.getString(5);
         System.out.println(item1);
 
         ArrayList<Item> NavItms2 = new ArrayList<Item>();
-        NavItms2.add(new Item(R.drawable.edit, "E-Mail", item1));
-        NavItms2.add(new Item(R.drawable.edit, "Password", "******"));
-        NavItms2.add(new Item(R.drawable.edit, "Phone", item3));
-        NavItms2.add(new Item(R.drawable.edit, "SMS", item4));
+        NavItms2.add(new Item(R.drawable.arrobapng, "E-Mail", item1));
+        NavItms2.add(new Item(R.drawable.candado, "Password", "******"));
+        NavItms2.add(new Item(R.drawable.telefono, "Phone", item3));
+        NavItms2.add(new Item(R.drawable.mensaje, "SMS", item4));
         // Sets the data behind this ListView
         NavAdapter2 = new ItemAdapter(inflater.getContext(), NavItms2);
         NavList2.setAdapter(NavAdapter2);

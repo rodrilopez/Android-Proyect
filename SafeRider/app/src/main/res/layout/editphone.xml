@@ -10,7 +10,9 @@
         android:layout_marginLeft="15dp"
         android:layout_below="@+id/textView8"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp" />
+        android:layout_marginTop="15dp"
+        android:clickable="true"
+        android:onClick="initPickContacts" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -31,5 +33,15 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="15dp"
-        android:layout_marginBottom="15dp" />
+        android:layout_marginBottom="15dp"
+        android:onClick="savePhone"
+        android:clickable="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textView11"
+        android:layout_below="@+id/button3"
+        android:layout_alignStart="@+id/button3" />
 </RelativeLayout>

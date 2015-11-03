@@ -23,11 +23,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -47,6 +49,7 @@ public class
     NavigationAdapter NavAdapter;
     public static final int PICK_CONTACT_REQUEST = 1;
     private Uri contactUri;
+    private int pickContact = 1;
 
 
     private EditText et1,et2,et3,et4;
@@ -59,89 +62,134 @@ public class
     SQLiteHelper database = new SQLiteHelper(this,"Config",null,1);
 
 
+    public void saveSms(View view){
+
+        EditText et1 = (EditText) findViewById(R.id.editText9);
+
+        String sms1 = et1.getText().toString();
+
+
+        SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
+        SQLiteDatabase bd = admin.getWritableDatabase();
+
+        ContentValues newValues = new ContentValues();
+        newValues.put("sms", sms1);
+
+        bd.update("Config", newValues, "id=1", null);
+        bd.close();
+        Toast.makeText(getApplicationContext(), "The new Contact is Save", Toast.LENGTH_SHORT).show();
+        MostrarFragment(1);
+    }
+
+
+    public void savePhone(View view){
+
+        TextView et1 = (TextView) findViewById(R.id.textView11);
+
+        String phone1 = et1.getText().toString();
+
+
+        SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
+        SQLiteDatabase bd = admin.getWritableDatabase();
+
+        ContentValues newValues = new ContentValues();
+        newValues.put("phone", phone1);
+
+        bd.update("Config", newValues, "id=1", null);
+        bd.close();
+        Toast.makeText(getApplicationContext(), "The new Contact is Save", Toast.LENGTH_SHORT).show();
+        MostrarFragment(1);
+    }
+
 
     public void saveEmail(View view){
 
-        SQLiteHelper admin = new SQLiteHelper(getApplicationContext(), "Config", null, 1);
-        SQLiteDatabase bd = admin.getReadableDatabase();
-        Cursor f = bd.rawQuery("select * from Config where id =" + 1, null);
-        f.moveToFirst();
-        TextView tv1 = (TextView) findViewById(R.id.textView6);
-        tv1.setText(f.getString(2));
-        String item1 = f.getString(1);
-        String item3 = f.getString(3);
-        String item4 = f.getString(4);
-        String item5 = f.getString(5);
+        SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
+        SQLiteDatabase bd = admin.getWritableDatabase();
 
-
-        SQLiteHelper admin2 = new SQLiteHelper(getApplicationContext(), "Config", null, 1);
-
-        SQLiteDatabase bd2 = admin.getWritableDatabase();
-        bd2.delete("Config", "id=" + 1, null);
-
-
-        SQLiteHelper admin3 = new SQLiteHelper(getApplicationContext(), "Config", null, 1);
-
-        SQLiteDatabase bd3 = admin.getWritableDatabase();
         EditText et1 = (EditText) findViewById(R.id.editText4);
 
         String item2 = et1.getText().toString();
 
-        ContentValues registro = new ContentValues();
-        registro.put("name", item1);
-        registro.put("mail", item2);
-        registro.put("password", item3);
-        registro.put("phone", item4);
-        registro.put("sms", item5);
-        bd3.insert("Config", null, registro);
-        bd3.close();
-        Toast.makeText(getApplicationContext(), "New E-mail are Saved", Toast.LENGTH_SHORT).show();
+        ContentValues newValues = new ContentValues();
+        newValues.put("mail", item2);
 
+        bd.update("Config", newValues, "id=1", null);
+        bd.close();
+        Toast.makeText(getApplicationContext(), "The new E-mail are Saved", Toast.LENGTH_SHORT).show();
+        MostrarFragment(1);
     }
 
+    public void savePassword(View view){
 
+        SQLiteHelper admin2 = new SQLiteHelper(this, "Config", null, 1);
+        SQLiteDatabase bd2 = admin2.getReadableDatabase();
+        Cursor f = bd2.rawQuery("Select * from Config where id=" + 1, null);
+        f.moveToFirst();
+        String pass = f.getString(3);
+        System.out.println(pass);
 
+        EditText pas = (EditText) findViewById(R.id.editTextpassold);
+        String pass1 = pas.getText().toString();
+
+        if (pass.equals(pass1)){
+
+            EditText pasn1 = (EditText) findViewById(R.id.editTextpassnew1);
+            EditText pasn2 = (EditText) findViewById(R.id.editTextpassnew2);
+
+            String newpass1 = pasn1.getText().toString();
+            String newpass2 = pasn2.getText().toString();
+
+            System.out.println("holaa");;
+
+            if (newpass1.equals(newpass2)){
+
+                SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
+                SQLiteDatabase bd = admin.getWritableDatabase();
+
+                ContentValues newValues = new ContentValues();
+                newValues.put("password", newpass1);
+
+                bd.update("Config", newValues, "id=1", null);
+                bd.close();
+                Toast.makeText(getApplicationContext(), "The new Password is Save", Toast.LENGTH_SHORT).show();
+                MostrarFragment(1);Toast.makeText(getApplicationContext(), "The new Password is Save", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(getApplicationContext(), "The new Passwords aren't equals", Toast.LENGTH_SHORT).show();
+            }
+        }else {
+            Toast.makeText(getApplicationContext(), "The old Password is Incorrect", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     public void initPickContacts(View v){
-    /*
-    Crear un intent para seleccionar un contacto del dispositivo
-     */
 
-        Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-
-    /*
-    Iniciar la actividad esperando respuesta a través
-    del canal PICK_CONTACT_REQUEST
-     */
-
-        startActivityForResult(i, PICK_CONTACT_REQUEST);
-
-    }
-
-    private void renderContact(Uri uri) {
-
-    /*
-    Obtener instancias de los Views
-     */
-        TextView contactPhone = (TextView)findViewById(R.id.textView10);
+            Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+            startActivityForResult(i, PICK_CONTACT_REQUEST);
+        }
 
 
-    /*
-    Setear valores
-     */
-        contactPhone.setText(getPhone(uri));
+
+    private void renderContact(Uri uri){
+
+        try {
+            TextView contactPhone = (TextView)findViewById(R.id.textView10);
+
+            contactPhone.setText(getPhone(uri));
+        }catch (Exception a){
+            TextView contactPhone = (TextView)findViewById(R.id.textView11);
+
+            contactPhone.setText(getPhone(uri));
+        }
+
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == PICK_CONTACT_REQUEST) {
             if (resultCode == RESULT_OK) {
-            /*
-            Capturar el valor de la Uri
-             */
+
                 contactUri = intent.getData();
-            /*
-            Procesar la Uri
-             */
+
                 renderContact(contactUri);
             }
         }
@@ -254,6 +302,8 @@ public class
 
         NavDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavList = (ListView) findViewById(R.id.navigation_drawer);
+        View header = getLayoutInflater().inflate(R.layout.header, null);
+        NavList.addHeaderView(header);
         NavIcons = getResources().obtainTypedArray(R.array.nav_iconos);
         titulo = getResources().getStringArray(R.array.nav_options);
         NavItms= new ArrayList<item_objct>();
@@ -274,9 +324,6 @@ public class
         }catch (Exception e){
 
         }
-
-
-
     }
 
 
@@ -298,16 +345,21 @@ public class
                 fragment=new Home();
                 break;
             case 2:
+                fragment=new Home();
+                break;
+            case 3:
                 SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
                 SQLiteDatabase bd = admin.getReadableDatabase();
                 Cursor fila = bd.rawQuery("select * from Config", null);
                 if (fila.moveToFirst()){
                     fragment = new Settings2();
+
                 }else {
                     fragment = new Settings();
+
                 }
                 break;
-            case 3:
+            case 4:
                 fragment=new Help();
                 break;
             default:
@@ -333,7 +385,7 @@ public class
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
-        ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#FA9B373B"));
+        ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#ff0e848b"));
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
