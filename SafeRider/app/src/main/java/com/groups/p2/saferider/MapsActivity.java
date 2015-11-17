@@ -1,16 +1,19 @@
 package com.groups.p2.saferider;
 
 
-import android.content.ContentValues;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Chronometer;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,25 +21,35 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.sql.SQLOutput;
-
 
 public class MapsActivity extends FragmentActivity {
-    private Thread thread;
+
+    private Chronometer chronometer;
     GoogleMap  mMap = null; // Might be null if Google Play services APK is not available.
-    double VARIACION_POR_METRO_LAT= 0.000008983;
-    double VARIACION_POR_METRO_LONG= 0.000008998;
-    Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
-        LocationManager mLoc = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        LocationListener mLocationListener = new mLocationListener();
-        mLoc.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,(LocationListener) mLocationListener);
-
         setUpMapIfNeeded();
+        chronometer = (Chronometer)findViewById(R.id.chronometer);
+        chronometer.start();
+        LocationManager mLoc = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationListener MyLocationListener = new MyLocationListener(this);
+        mLoc.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1, (LocationListener) MyLocationListener);
+        final Context cnt = this.getApplicationContext();
+        chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                if (chronometer.getText().equals("00:10")){
+                    Toast.makeText(cnt, "Sono", Toast.LENGTH_LONG).show();
+                    conf();
+                    //TODO sonar alarma
+                }
+            }
+        });
+
+
 
     }
     private void setUpMapIfNeeded() {
@@ -72,71 +85,21 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    public void setLocation(Location loc) {
-
-        thread=  new Thread(){
-            
-            public void run(Location loc) throws InterruptedException {
-                    boolean salir = true;
-                    while (salir == true) {
-                        System.out.println("mientras");
-                        //Geteo Latitud y Longitud
-                        double lat = loc.getLatitude();
-                        double log = loc.getLongitude();
-                        //Duermo 5 min
-                        synchronized(this){
-                            wait(3000);
-                        }
-                        //Geteo de vuelta Latitud y Longitud
-                        double mLat = loc.getLatitude();
-                        double mLog = loc.getLongitude();
-                        //Resto las longitudes y latitudes
-                        double mRLat = mLat - lat;
-                        double mRLog = mLog - log;
-                        //Paso a metros y veo si son mayores a 5 metros
-                        if (mRLat / VARIACION_POR_METRO_LAT > 5 || mRLog / VARIACION_POR_METRO_LONG > 5) {
-                            System.out.println("todo ok");
-                        } else {
-                            //Sonar alarma
-                            salir = false;
-                        }
-                    }
-                }
-            };
-
-        thread.start();
-    }
-}
-
-
-class mLocationListener implements LocationListener{
-    MapsActivity mapsActivity;
-
-    public MapsActivity getMapsActivity(){
-        return mapsActivity;
-    }
-
-    public void setMapsActivity (MapsActivity mapsActivity){
-        this.mapsActivity = mapsActivity;
-    }
-
-    @Override
-    public void onLocationChanged(Location loc){
-        this.mapsActivity.setLocation(loc);
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
+    public void setLocation(Location loc){
+        chronometer.setBase(SystemClock.elapsedRealtime());
+        chronometer.start();
 
     }
 
-    @Override
-    public void onProviderEnabled(String s) {
-        System.out.println("GPS Enabled");
+    public AlertDialog conf(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View v = inflater.inflate(R.layout.confirmar, null);
+
+        builder.setView(v);
+        return builder.show();
     }
 
-    @Override
-    public void onProviderDisabled(String s) {
-        System.out.println("GPS Disabled");
     }
-}
+
+

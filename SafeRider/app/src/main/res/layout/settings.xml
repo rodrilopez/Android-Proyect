@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:text="Name"
+            android:hint="Name"
             android:ems="10"
             android:id="@+id/editText5"
             android:layout_alignParentTop="true"
@@ -48,7 +48,7 @@
             android:inputType="textEmailAddress"
             android:ems="10"
             android:id="@+id/editText6"
-            android:text="E-mail"
+            android:hint="E-mail"
             android:layout_marginTop="38dp"
             android:layout_below="@+id/editText5"
             android:layout_alignParentStart="true" />
@@ -60,7 +60,8 @@
             android:ems="10"
             android:id="@+id/editText7"
             android:layout_marginTop="38dp"
-            android:text="password"
+            android:hint="password"
+            android:focusable="false"
             android:layout_below="@+id/editText6"
             android:layout_alignParentStart="true" />
 
@@ -76,19 +77,18 @@
         <EditText
             android:layout_width="350dp"
             android:layout_height="48dp"
+            android:hint="Sms"
             android:id="@+id/editText8"
-            android:layout_above="@+id/button4"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="30dp" />
+            android:layout_below="@+id/button5"
+            android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
         android:id="@+id/textView10"
-        android:layout_below="@+id/button5"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp" />
+        android:layout_below="@+id/editText8"
+        android:layout_alignStart="@+id/editText8"
+        android:layout_marginStart="37dp"
+        android:layout_marginTop="8dp" />
 </RelativeLayout>
