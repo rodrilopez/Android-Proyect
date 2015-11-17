@@ -15,7 +15,7 @@
     </string-array>
 
     <array name="nav_iconos">
-        <item></item>
+        <item>@drawable/local</item>
         <item>@drawable/engranaje</item>
         <item>@drawable/preg</item>
     </array>
