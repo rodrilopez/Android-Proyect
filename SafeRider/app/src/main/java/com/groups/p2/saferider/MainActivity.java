@@ -2,6 +2,7 @@ package com.groups.p2.saferider;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.ContentValues;
@@ -23,13 +24,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
+import java.sql.Array;
 import java.util.ArrayList;
 
 
@@ -49,38 +49,55 @@ public class
     NavigationAdapter NavAdapter;
     public static final int PICK_CONTACT_REQUEST = 1;
     private Uri contactUri;
-    private int pickContact = 1;
+    SQLiteAdapter sqlA = new SQLiteAdapter(this, "Config", null, 1);
 
 
-    private EditText et1,et2,et3,et4;
-    public static final int ID = 0;
+    private EditText et1,et2,et3;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
-    SQLiteHelper database = new SQLiteHelper(this,"Config",null,1);
 
 
-    public void saveSms(View view){
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        EditText et1 = (EditText) findViewById(R.id.editText9);
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mTitle = getTitle();
 
-        String sms1 = et1.getText().toString();
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer,
+                (DrawerLayout) findViewById(R.id.drawer_layout));
 
+        NavDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavList = (ListView) findViewById(R.id.navigation_drawer);
+        View header = getLayoutInflater().inflate(R.layout.header, null);
+        NavList.addHeaderView(header);
+        NavIcons = getResources().obtainTypedArray(R.array.nav_iconos);
+        titulo = getResources().getStringArray(R.array.nav_options);
+        NavItms= new ArrayList<item_objct>();
+        NavItms.add(new item_objct(titulo[0], NavIcons.getResourceId(0, -1)));
+        NavItms.add(new item_objct(titulo[1], NavIcons.getResourceId(1, -1)));
+        NavItms.add(new item_objct(titulo[2], NavIcons.getResourceId(2, -1)));
+        NavAdapter=new NavigationAdapter(this, NavItms);
+        NavList.setAdapter(NavAdapter);
 
-        SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
-        SQLiteDatabase bd = admin.getWritableDatabase();
+        NavList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+                MostrarFragment(position + 1);
+            }
+        });
+        try {
+            MostrarFragment(1);
+        }catch (Exception e){
 
-        ContentValues newValues = new ContentValues();
-        newValues.put("sms", sms1);
-
-        bd.update("Config", newValues, "id=1", null);
-        bd.close();
-        Toast.makeText(getApplicationContext(), "The new Contact is Save", Toast.LENGTH_SHORT).show();
-        MostrarFragment(1);
+        }
     }
-
 
     public void savePhone(View view){
 
@@ -88,15 +105,10 @@ public class
 
         String phone1 = et1.getText().toString();
 
-
-        SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
-        SQLiteDatabase bd = admin.getWritableDatabase();
-
         ContentValues newValues = new ContentValues();
         newValues.put("phone", phone1);
 
-        bd.update("Config", newValues, "id=1", null);
-        bd.close();
+        sqlA.Actualizar(this, "Config", newValues, 1);
         Toast.makeText(getApplicationContext(), "The new Contact is Save", Toast.LENGTH_SHORT).show();
         MostrarFragment(1);
     }
@@ -104,8 +116,7 @@ public class
 
     public void saveEmail(View view){
 
-        SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
-        SQLiteDatabase bd = admin.getWritableDatabase();
+
 
         EditText et1 = (EditText) findViewById(R.id.editText4);
 
@@ -114,19 +125,14 @@ public class
         ContentValues newValues = new ContentValues();
         newValues.put("mail", item2);
 
-        bd.update("Config", newValues, "id=1", null);
-        bd.close();
+        sqlA.Actualizar(this, "Config", newValues, 1);
         Toast.makeText(getApplicationContext(), "The new E-mail are Saved", Toast.LENGTH_SHORT).show();
         MostrarFragment(1);
     }
 
     public void savePassword(View view){
 
-        SQLiteHelper admin2 = new SQLiteHelper(this, "Config", null, 1);
-        SQLiteDatabase bd2 = admin2.getReadableDatabase();
-        Cursor f = bd2.rawQuery("Select * from Config where id=" + 1, null);
-        f.moveToFirst();
-        String pass = f.getString(3);
+        String pass = sqlA.Leer(this,"Config",1,3);
         System.out.println(pass);
 
         EditText pas = (EditText) findViewById(R.id.editTextpassold);
@@ -144,14 +150,10 @@ public class
 
             if (newpass1.equals(newpass2)){
 
-                SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
-                SQLiteDatabase bd = admin.getWritableDatabase();
-
                 ContentValues newValues = new ContentValues();
                 newValues.put("password", newpass1);
 
-                bd.update("Config", newValues, "id=1", null);
-                bd.close();
+                sqlA.Actualizar(this,"Config",newValues, 1);
                 Toast.makeText(getApplicationContext(), "The new Password is Save", Toast.LENGTH_SHORT).show();
                 MostrarFragment(1);Toast.makeText(getApplicationContext(), "The new Password is Save", Toast.LENGTH_SHORT).show();
             }else {
@@ -164,9 +166,9 @@ public class
 
     public void initPickContacts(View v){
 
-            Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-            startActivityForResult(i, PICK_CONTACT_REQUEST);
-        }
+        Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(i, PICK_CONTACT_REQUEST);
+    }
 
 
 
@@ -253,9 +255,11 @@ public class
 
 
     public void Start(View view){
-
-        Intent i = new Intent(this, MapsActivity.class);
-        startActivity(i);
+        String foo = sqlA.Leer(this,"Config",1,3);
+        if (foo != null){
+            Intent i = new Intent(this, MapsActivity.class);
+            startActivity(i);
+        }
     }
 
     public void Save(View view){
@@ -263,67 +267,20 @@ public class
         et1 = (EditText) findViewById(R.id.editText5);
         et2 = (EditText) findViewById(R.id.editText6);
         et3 = (EditText) findViewById(R.id.editText7);
-        et4 = (EditText) findViewById(R.id.editText8);
         TextView et5 = (TextView) findViewById(R.id.textView10);
-        SQLiteHelper admin = new SQLiteHelper(this, "Config", null, 1);
-        SQLiteDatabase bd = admin.getWritableDatabase();
         String name = et1.getText().toString();
         String email = et2.getText().toString();
         String pass = et3.getText().toString();
         String phone1 = et5.getText().toString();
-        String sms = et4.getText().toString();
         ContentValues registro = new ContentValues();
         registro.put("name", name);
         registro.put("mail", email);
         registro.put("password", pass);
         registro.put("phone", phone1);
-        registro.put("sms", sms);
-        bd.insert("Config", null, registro);
-        bd.close();
+        sqlA.Cargar(this, "Config", registro);
         Toast.makeText(getApplicationContext(), "Settings are saved", Toast.LENGTH_SHORT).show();
         MostrarFragment(1);
 
-    }
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
-
-        NavDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavList = (ListView) findViewById(R.id.navigation_drawer);
-        View header = getLayoutInflater().inflate(R.layout.header, null);
-        NavList.addHeaderView(header);
-        NavIcons = getResources().obtainTypedArray(R.array.nav_iconos);
-        titulo = getResources().getStringArray(R.array.nav_options);
-        NavItms= new ArrayList<item_objct>();
-        NavItms.add(new item_objct(titulo[0], NavIcons.getResourceId(0, -1)));
-        NavItms.add(new item_objct(titulo[1], NavIcons.getResourceId(1, -1)));
-        NavItms.add(new item_objct(titulo[2], NavIcons.getResourceId(2, -1)));
-        NavAdapter=new NavigationAdapter(this, NavItms);
-        NavList.setAdapter(NavAdapter);
-
-        NavList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-                MostrarFragment(position + 1);
-            }
-        });
-        try {
-            MostrarFragment(1);
-        }catch (Exception e){
-
-        }
     }
 
 

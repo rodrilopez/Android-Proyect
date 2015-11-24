@@ -40,24 +40,20 @@ public class Settings2 extends Fragment implements AdapterView.OnItemClickListen
 
         View view = inflater.inflate(R.layout.settings2, container, false);
 
-        SQLiteHelper admin = new SQLiteHelper(inflater.getContext(), "Config", null, 1);
+        SQLiteAdapter sql = new SQLiteAdapter(inflater.getContext(),"Config",null, 1);
 
-        SQLiteDatabase bd = admin.getReadableDatabase();
-        Cursor f = bd.rawQuery("select * from Config where id =" + 1, null);
-        f.moveToFirst();
+
 
         NavList2 = (ListView) view.findViewById(R.id.listView);
 
-        String item1 = f.getString(2);
-        String item3 = f.getString(4);
-        String item4 = f.getString(5);
+        String item1 = sql.Leer(inflater.getContext(),"Config",1, 1);
+        String item3 = sql.Leer(inflater.getContext(),"Config",1, 3);
         System.out.println(item1);
 
         ArrayList<Item> NavItms2 = new ArrayList<Item>();
         NavItms2.add(new Item(R.drawable.arrobapng, "E-Mail", item1));
         NavItms2.add(new Item(R.drawable.candado, "Password", "******"));
         NavItms2.add(new Item(R.drawable.telefono, "Phone", item3));
-        NavItms2.add(new Item(R.drawable.mensaje, "SMS", item4));
         // Sets the data behind this ListView
         NavAdapter2 = new ItemAdapter(inflater.getContext(), NavItms2);
         NavList2.setAdapter(NavAdapter2);
@@ -83,9 +79,6 @@ public class Settings2 extends Fragment implements AdapterView.OnItemClickListen
                 break;
             case 3:
                 fragment = new EditPhone();
-                break;
-            case 4:
-                fragment = new EditSms();
                 break;
             default:
 

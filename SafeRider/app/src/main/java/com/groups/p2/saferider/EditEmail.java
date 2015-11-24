@@ -24,12 +24,6 @@ public class EditEmail extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.editemail, container, false);
-        SQLiteHelper admin = new SQLiteHelper(inflater.getContext(), "Config", null, 1);
-        SQLiteDatabase bd = admin.getReadableDatabase();
-        Cursor f = bd.rawQuery("select * from Config where id =" + 1, null);
-        f.moveToFirst();
-        TextView tv1 = (TextView) view.findViewById(R.id.textView6);
-        tv1.setText(f.getString(2));
 
         return view;
     }

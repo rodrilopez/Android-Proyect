@@ -23,7 +23,7 @@ public class MyLocationListener implements LocationListener {
     }
     @Override
     public void onLocationChanged(Location loc) {
-        mapsActivity.setLocation(loc);
+        mapsActivity.setLocation();
     }
 
     @Override
